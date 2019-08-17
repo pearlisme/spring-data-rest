@@ -1,25 +1,34 @@
 package com.pearl.user.controller;
 
+import com.pearl.user.model.User;
 import com.pearl.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
-public class HomeController {
+class HomeController {
 
     @Autowired
-    UserService userService;
+    private UserService userService;
 
-    @RequestMapping("/")
+    @SuppressWarnings("SameReturnValue")
+    @GetMapping("/")
     public String sayHello(){
 
-        loadSample();
         return "Welcome to user-master";
     }
 
-    private void loadSample() {
-
-        userService.loadUser();
+    @SuppressWarnings("SameReturnValue")
+    @PreAuthorize("hasAnyRole('ADMIN')")
+    @GetMapping("/secured")
+    public String securedHello() {
+        return "Secured Hello";
     }
+
+    @PostMapping("/add")
+    public String addUser(@RequestBody User user){
+        return userService.addUser(user);
+    }
+
 }
